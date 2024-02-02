@@ -45,3 +45,21 @@ def createRoom(request):
     # Prepare the form to be rendered in the template
     context = {'form':form}
     return render(request, 'base/room_form.html', context)
+
+# Allows us to update a specific room
+def updateRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    form = RoomForm(instance=room) # the form will be prefilled with the room value.
+    
+    ## Check if it is a POST method
+    if request.method == 'POST':
+        # The data in the POST method is going to replace whatever value is changed in the room with the new value written in the room form. 
+        form = RoomForm(request.POST, instance=room)
+        # If the form is valid, save the data to the database and redirect to the home page
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    
+    context = {'form' : form}
+    return render(request, 'base/room_form.html', context)
+    

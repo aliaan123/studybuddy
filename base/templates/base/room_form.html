@@ -10,7 +10,7 @@ for creating a new room. The form includes a CSRF token for security.-->
     <form method = "POST" action = "">
         {% csrf_token %}
         {{form.as_p}}
-
+        <!-- This is template that submits a post request. -->
         <input type = "submit" value = "Submit" />
 
     </form>

@@ -25,9 +25,15 @@ class Room(models.Model):
     updated = models.DateTimeField(auto_now = True) # Takes a snapshot of anytime the table (model instance) is updated. Takes a timestamp every time room is updated.
     created = models.DateTimeField(auto_now_add = True) # Takes a timestamp of when the instance was created.
     
+    # Newest updated room is first in the list
+    class Meta:
+        ordering = ['-updated', '-created']
+    
     def __str__(self): # string representation of the room
         return self.name
     
+
+
 
 # Message class, represents a message sent by a user in a room. 
 # Has Room relationship and User relationship. Both are one to many relationships in the database. 
