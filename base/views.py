@@ -1,8 +1,8 @@
+# Import necessary modules from Django
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Room
 from .forms import RoomForm
-# Create your views here.
 
 # rooms = [
 #    {"id":1, "name":"Lets learn python!"},
@@ -10,25 +10,38 @@ from .forms import RoomForm
 #    {"id":3, "name":"Frontend developers!"},
 # ]
 
+# Define views for the application
+
+# This function retrieves all rooms from the database 
+# and passes them to the "base/home.html" template using the Django render function. 
+# This template is responsible for displaying the list of rooms.
 def home(request): 
-    rooms = Room.objects.all() # query for rooms. Gives us all the rooms in the database. This is passed into the template.
+    # Query all rooms from the Room model (database table) and pass them to the template
+    rooms = Room.objects.all() 
     context = {"rooms" : rooms}
     return render(request, "base/home.html", context)
 
+#  Fetches a specific room based on the provided primary key (pk) from the URL. 
+# The room is then passed to the "base/room.html" template.
 def room(request, pk):
-    room = Room.objects.get(id=pk) # gets a single room from the database based on the unique id. 
+    # Retrieve a single room from the database based on the provided id (pk)
+    room = Room.objects.get(id=pk) 
     context = {"room" : room}
     return render(request, "base/room.html", context)
 
 
+# Handles the creation of a new room. It initializes a RoomForm, processes the form data on a POST request, 
+# saves the room to the database if valid, and redirects to the home page.
 def createRoom(request):
+    # Initialize a RoomForm instance
     form = RoomForm()
     if request.method == 'POST':
-        # Passes in the request POST data into the form. 
+        # If the request method is POST, populate the form with the provided POST data
         form = RoomForm(request.POST)
-        # If the form has valid data, we save it and return to home. 
+        # If the form is valid, save the data to the database and redirect to the home page
         if form.is_valid():
             form.save()
             return redirect('home')
+    # Prepare the form to be rendered in the template
     context = {'form':form}
     return render(request, 'base/room_form.html', context)

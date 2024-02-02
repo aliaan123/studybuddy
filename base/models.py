@@ -16,6 +16,7 @@ class Topic(models.Model):
 
 # Room class, represents a chat room.
 class Room(models.Model):
+    # Describes attributes of a chatroom.
     host = models.ForeignKey(User, on_delete=models.SET_NULL, null = True) # The actual user that is connected. Relationship to a host. 
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null = True) # A topic can have multiple rooms, but a room can only have one topic. 
     name = models.CharField(max_length = 200) # Name of the room. 
@@ -33,7 +34,7 @@ class Room(models.Model):
 # Each room is going to have multiple messages, messages has only one room.
 # Each user can have multiple messages, messages can only have one user. 
 class Message(models.Model):
-    
+    # Describes attributes of a message sent in the chat room by a user.
     user = models.ForeignKey(User, on_delete=models.CASCADE) # User that is sending the message. Import user model from the django library. 
     
     # Foreign key used to establish the relationship in the database, and connect to the parent (Room).
