@@ -63,3 +63,13 @@ def updateRoom(request, pk):
     context = {'form' : form}
     return render(request, 'base/room_form.html', context)
     
+# Function for deleting rooms
+# Retrieves a room for deletion, deletes it from the database on a POST request, 
+# and redirects to the home page. Otherwise, renders a confirmation page for deletion 
+def deleteRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    if request.method == 'POST':
+        # Removes room from database, deletes it 
+        room.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj':room})
