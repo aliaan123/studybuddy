@@ -18,3 +18,8 @@ def room(request, pk):
     room = Room.objects.get(id=pk) # gets a single room from the database based on the unique id. 
     context = {"room" : room}
     return render(request, "base/room.html", context)
+
+
+def createRoom(request):
+    context = {}
+    return render(request, 'base/room_form.html', context)
