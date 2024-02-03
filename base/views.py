@@ -13,6 +13,14 @@ from .forms import RoomForm
 
 # Define views for the application
 
+
+
+def loginPage(request):
+    context = {}
+    return render(request, 'base/login_register.html', context)    
+
+
+
 # This function retrieves rooms from the database 
 # and passes them to the "base/home.html" template using the Django render function. 
 # This template is responsible for displaying the list of rooms.
