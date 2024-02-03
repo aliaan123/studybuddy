@@ -1,7 +1,7 @@
 # Import necessary modules from Django
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Room
+from .models import Room, Topic
 from .forms import RoomForm
 
 # rooms = [
@@ -12,13 +12,21 @@ from .forms import RoomForm
 
 # Define views for the application
 
-# This function retrieves all rooms from the database 
+# This function retrieves rooms from the database 
 # and passes them to the "base/home.html" template using the Django render function. 
 # This template is responsible for displaying the list of rooms.
 def home(request): 
-    # Query all rooms from the Room model (database table) and pass them to the template
-    rooms = Room.objects.all() 
-    context = {"rooms" : rooms}
+    # Query rooms from the Room model (database table) and pass them to the template
+
+   # Retrieves the value of the 'q' parameter from the request's GET parameters. If 'q' is not present, it defaults to an empty string.    
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    # Queries the Room model (database table) to filter rooms based on the topic name containing the query (q). The __icontains lookup is used for a case-insensitive search.
+    rooms = Room.objects.filter(topic__name__icontains=q)  # __ is used for quering upwards to the parent. 
+    # Retrieves all topics from the Topic model.
+    topics = Topic.objects.all()
+    #  Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
+    context = {"rooms" : rooms, 'topics': topics}
+    #  Uses the render function to render the "base/home.html" template with the provided context.
     return render(request, "base/home.html", context)
 
 #  Fetches a specific room based on the provided primary key (pk) from the URL. 
@@ -26,15 +34,18 @@ def home(request):
 def room(request, pk):
     # Retrieve a single room from the database based on the provided id (pk)
     room = Room.objects.get(id=pk) 
+    # Creates a dictionary context containing the retrieved room. This data will be passed to the template for rendering.
     context = {"room" : room}
+    # Uses the render function to render the "base/room.html" template with the provided context.
     return render(request, "base/room.html", context)
 
 
 # Handles the creation of a new room. It initializes a RoomForm, processes the form data on a POST request, 
 # saves the room to the database if valid, and redirects to the home page.
 def createRoom(request):
-    # Initialize a RoomForm instance
+    # Initializes a new instance of the RoomForm class.
     form = RoomForm()
+    # Checks if the request method is POST.
     if request.method == 'POST':
         # If the request method is POST, populate the form with the provided POST data
         form = RoomForm(request.POST)
@@ -42,32 +53,39 @@ def createRoom(request):
         if form.is_valid():
             form.save()
             return redirect('home')
-    # Prepare the form to be rendered in the template
+    # Creates a dictionary context containing the form. This data will be passed to the template for rendering.
     context = {'form':form}
+    # Uses the render function to render the "base/room_form.html" template with the provided context.
     return render(request, 'base/room_form.html', context)
 
+# Defines a function named updateRoom that takes a request object and a pk (primary key) parameter.
 # Allows us to update a specific room
 def updateRoom(request, pk):
+    # Retrieves a specific room based on the provided pk.
     room = Room.objects.get(id=pk)
+    # Initializes a form instance with the existing room data (instance=room). 
     form = RoomForm(instance=room) # the form will be prefilled with the room value.
     
-    ## Check if it is a POST method
+    # Check if it is a POST method
     if request.method == 'POST':
-        # The data in the POST method is going to replace whatever value is changed in the room with the new value written in the room form. 
+        # Populates the form with the provided POST data, replacing the values in the form with the new values.
         form = RoomForm(request.POST, instance=room)
         # If the form is valid, save the data to the database and redirect to the home page
         if form.is_valid():
             form.save()
             return redirect('home')
-    
+    # Creates a dictionary context containing the form. This data will be passed to the template for rendering.
     context = {'form' : form}
+    # Uses the render function to render the "base/room_form.html" template with the provided context.
     return render(request, 'base/room_form.html', context)
     
-# Function for deleting rooms
+# Function for deleting rooms.
 # Retrieves a room for deletion, deletes it from the database on a POST request, 
 # and redirects to the home page. Otherwise, renders a confirmation page for deletion 
 def deleteRoom(request, pk):
+    # Retrieves a specific room based on the provided pk.
     room = Room.objects.get(id=pk)
+    # Checks if the request method is POST.
     if request.method == 'POST':
         # Removes room from database, deletes it 
         room.delete()
