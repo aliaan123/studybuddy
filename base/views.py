@@ -1,5 +1,6 @@
 # Import necessary modules from Django
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -118,6 +119,11 @@ def updateRoom(request, pk):
     # Initializes a form instance with the existing room data (instance=room). 
     form = RoomForm(instance=room) # the form will be prefilled with the room value.
     
+    # Only allows the owner of the room to update the room. 
+    if request.user != room.host :
+        return HttpResponse('You are not allowed here!')
+    
+    
     # Check if it is a POST method
     if request.method == 'POST':
         # Populates the form with the provided POST data, replacing the values in the form with the new values.
@@ -138,6 +144,11 @@ def updateRoom(request, pk):
 def deleteRoom(request, pk):
     # Retrieves a specific room based on the provided pk.
     room = Room.objects.get(id=pk)
+    
+     # Only allows the owner of the room to delete the room. 
+    if request.user != room.host :
+        return HttpResponse('You are not allowed here!')
+    
     # Checks if the request method is POST.
     if request.method == 'POST':
         # Removes room from database, deletes it 
