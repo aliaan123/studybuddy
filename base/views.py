@@ -30,8 +30,11 @@ def home(request):
     # __ is used for quering upwards to the parent. 
     # Retrieves all topics from the Topic model.
     topics = Topic.objects.all()
+    # Counts the number of rooms
+    room_count = rooms.count()
+    
     # Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
-    context = {"rooms" : rooms, 'topics': topics}
+    context = {"rooms" : rooms, 'topics': topics, 'room_count' : room_count}
     # Uses the render function to render the "base/home.html" template with the provided context.
     return render(request, "base/home.html", context)
 
