@@ -47,6 +47,10 @@ def loginPage(request):
     context = {}
     return render(request, 'base/login_register.html', context)    
 
+# Function for logging out a user. 
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
 
 
 # This function retrieves rooms from the database 

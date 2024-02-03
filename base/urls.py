@@ -5,6 +5,7 @@ from . import views
 # "room/str:pk/" leads to the room function, and "create-room/" leads to createRoom.
 urlpatterns = [
     path('login/', views.loginPage, name = "login"),
+    path('logout/', views.logoutUser, name = "logout"),
 
     
     path("", views.home, name = "home"),
