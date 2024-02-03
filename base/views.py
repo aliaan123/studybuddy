@@ -111,6 +111,7 @@ def createRoom(request):
 
 # Defines a function named updateRoom that takes a request object and a pk (primary key) parameter.
 # Allows us to update a specific room
+@login_required(login_url='login') # Requires to be logged in, in order to update a room. Redirects user to login page if they are not logged in.
 def updateRoom(request, pk):
     # Retrieves a specific room based on the provided pk.
     room = Room.objects.get(id=pk)
@@ -133,6 +134,7 @@ def updateRoom(request, pk):
 # Function for deleting rooms.
 # Retrieves a room for deletion, deletes it from the database on a POST request, 
 # and redirects to the home page. Otherwise, renders a confirmation page for deletion 
+@login_required(login_url='login') # Requires to be logged in, in order to delete a room. Redirects user to login page if they are not logged in.
 def deleteRoom(request, pk):
     # Retrieves a specific room based on the provided pk.
     room = Room.objects.get(id=pk)
