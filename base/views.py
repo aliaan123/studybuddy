@@ -1,6 +1,7 @@
 # Import necessary modules from Django
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -91,6 +92,7 @@ def room(request, pk):
 
 # Handles the creation of a new room. It initializes a RoomForm, processes the form data on a POST request, 
 # saves the room to the database if valid, and redirects to the home page.
+@login_required(login_url='login') # Requires to be logged in, in order to create a room. Redirects user to login page if they are not logged in.
 def createRoom(request):
     # Initializes a new instance of the RoomForm class.
     form = RoomForm()
