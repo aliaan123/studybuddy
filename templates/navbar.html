@@ -2,4 +2,10 @@
     <h1>LOGO</h1>
 </a>
 
+<form method = "GET" action = "{% url 'home' %}">
+    <!-- Whatever we have here will be thrown into the url with q before that. 
+        This makes us able to search for rooms with the use of the q (query) value. -->
+    <input type = "text" name = "q" placeholder = "Search Rooms..." />
+</form>
+
 <hr>

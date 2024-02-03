@@ -1,5 +1,6 @@
 # Import necessary modules from Django
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.http import HttpResponse
 from .models import Room, Topic
 from .forms import RoomForm
@@ -21,12 +22,17 @@ def home(request):
    # Retrieves the value of the 'q' parameter from the request's GET parameters. If 'q' is not present, it defaults to an empty string.    
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     # Queries the Room model (database table) to filter rooms based on the topic name containing the query (q). The __icontains lookup is used for a case-insensitive search.
-    rooms = Room.objects.filter(topic__name__icontains=q)  # __ is used for quering upwards to the parent. 
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) | 
+        Q(name__icontains=q) |
+        Q(description__icontains=q)
+        )  # we can now search by three different values: topic_name, name and description.
+    # __ is used for quering upwards to the parent. 
     # Retrieves all topics from the Topic model.
     topics = Topic.objects.all()
-    #  Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
+    # Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
     context = {"rooms" : rooms, 'topics': topics}
-    #  Uses the render function to render the "base/home.html" template with the provided context.
+    # Uses the render function to render the "base/home.html" template with the provided context.
     return render(request, "base/home.html", context)
 
 #  Fetches a specific room based on the provided primary key (pk) from the URL. 
