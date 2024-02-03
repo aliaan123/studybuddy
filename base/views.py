@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from .models import Room, Topic
 from .forms import RoomForm
@@ -16,18 +17,32 @@ from .forms import RoomForm
 # Define views for the application
 
 
-
+# Function for logging in a user
 def loginPage(request):
     
+    # Checks if a POST request was sent. 
     if request.method == 'POST':
-        email = request.POST.get('username')
+        # Get the username and password from the data sent in the POST request. 
+        username = request.POST.get('username')
         password = request.POST.get('password')
         
+        # Checks if the user exists with a try catch block. 
         try:
             user = User.objects.get(username=username)
         except:
             messages.error(request, 'User does not exist')
         
+        # Gets user object based on username and password.
+        # Authenticate method will either give us an error or return back a user that matches the credentials (username and password).
+        user = authenticate(request, username=username, password=password)
+        
+        # Logs the user in if there is one, and returns home. 
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Username or password does not exist')
+                
     
     context = {}
     return render(request, 'base/login_register.html', context)    
