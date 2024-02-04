@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .models import Room, Topic
 from .forms import RoomForm
@@ -22,6 +23,9 @@ from .forms import RoomForm
 # Function for logging in a user
 def loginPage(request):
     
+    # sets the variable page to specify that this is a login page, it is passed into the context variable, and used in the html to run the correct code.
+    page = 'login'
+    
     # If the user is already logged in and tries to click on the login button again, they will just get redirected to home instead. 
     if request.user.is_authenticated:
         return redirect('home')
@@ -29,7 +33,7 @@ def loginPage(request):
     # Checks if a POST request was sent. 
     if request.method == 'POST':
         # Get the username and password from the data sent in the POST request. 
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
         
         # Checks if the user exists with a try catch block. 
@@ -50,13 +54,34 @@ def loginPage(request):
             messages.error(request, 'Username or password does not exist')
                 
     
-    context = {}
+    context = {'page' : page}
     return render(request, 'base/login_register.html', context)    
 
 # Function for logging out a user. 
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+
+def registerPage(request):
+    # else is used in the html, so no need for a page variable here. 
+    form = UserCreationForm()
+    
+    # Check if method is a POST request
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST) # passes in the data: username and password into user creation form
+        # Checks if the form is valid
+        if form.is_valid():
+            user = form.save(commit=False) # saving the form, freezing it in time. If the form is valid, the user is created and we want to be able to access it right away. This is why we set commit = False
+            user.username = user.username.lower() # Now that the user is created, we can access their credentials, like username and password. We lowercase the username of the user. 
+            user.save() # saves the user. 
+            login(request, user) # logs the user in.
+            return redirect('home') # sends the user back to the home page.
+        else: 
+            messages.error(request, 'An error occurred during registration')
+            
+    context = {'form' : form}
+    return render(request,'base/login_register.html', context)
 
 
 # This function retrieves rooms from the database 
