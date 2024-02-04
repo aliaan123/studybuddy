@@ -22,6 +22,10 @@ from .forms import RoomForm
 # Function for logging in a user
 def loginPage(request):
     
+    # If the user is already logged in and tries to click on the login button again, they will just get redirected to home instead. 
+    if request.user.is_authenticated:
+        return redirect('home')
+    
     # Checks if a POST request was sent. 
     if request.method == 'POST':
         # Get the username and password from the data sent in the POST request. 
