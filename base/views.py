@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
-from .models import Room, Topic
+from .models import Room, Topic, Message
 from .forms import RoomForm
 
 # rooms = [
@@ -119,6 +119,15 @@ def room(request, pk):
     # To get all the children, all we have to do is specify the model name, in this case it is message. We put that in lowercase value (message).
     # So the model name in lowercase followed by "_set.all()". Which is basically saying, give us the set of messages that are related to this specific room.
     room_messages = room.message_set.all().order_by('-created')
+
+    # Creates a Message object and sets the model fields.
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user=request.user,
+            room=room,
+            body=request.POST.get('body') # The body is passed in from the comment form in the room.html, where in input : name = 'body'. Thats how we get that data.
+        )
+        return redirect('room', pk=room.id)
 
     # Creates a dictionary context containing the retrieved room. This data will be passed to the template for rendering.
     context = {"room" : room, "room_messages" : room_messages}

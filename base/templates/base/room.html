@@ -25,5 +25,17 @@ in the content block  -->
 </div>
 
 
+<!--Sends a POST request to the room view -->
+{% if request.user.is_authenticated %}
+<div classs = "comment-form">
+    <form method = 'POST' action = "">
+        {% csrf_token %}
+        <input type = "text" name = "body" placeholder = "Write your message here..."/>
+    </form>
+</div>
+{% endif %}
+
+
+
 {% endblock content %}
 
