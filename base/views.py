@@ -114,8 +114,14 @@ def home(request):
 def room(request, pk):
     # Retrieve a single room from the database based on the provided id (pk)
     room = Room.objects.get(id=pk) 
+    
+    # Queries child object of a specific room. If we take the parent model, in this case we have a room. 
+    # To get all the children, all we have to do is specify the model name, in this case it is message. We put that in lowercase value (message).
+    # So the model name in lowercase followed by "_set.all()". Which is basically saying, give us the set of messages that are related to this specific room.
+    room_messages = room.message_set.all().order_by('-created')
+
     # Creates a dictionary context containing the retrieved room. This data will be passed to the template for rendering.
-    context = {"room" : room}
+    context = {"room" : room, "room_messages" : room_messages}
     # Uses the render function to render the "base/room.html" template with the provided context.
     return render(request, "base/room.html", context)
 
