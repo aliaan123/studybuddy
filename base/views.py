@@ -120,6 +120,9 @@ def room(request, pk):
     # So the model name in lowercase followed by "_set.all()". Which is basically saying, give us the set of messages that are related to this specific room.
     room_messages = room.message_set.all().order_by('-created')
 
+    # brings the participants in. all() method is used for the many to many relationship field to get all the participants. These are passed into the context dictionary.
+    participants = room.participants.all()
+
     # Creates a Message object and sets the model fields.
     if request.method == 'POST':
         message = Message.objects.create(
@@ -127,10 +130,12 @@ def room(request, pk):
             room=room,
             body=request.POST.get('body') # The body is passed in from the comment form in the room.html, where in input : name = 'body'. Thats how we get that data.
         )
+        # The user will be added to the many to many field for the participants, so that we can render out the participants of a chatroom.  
+        room.participants.add(request.user)
         return redirect('room', pk=room.id)
 
     # Creates a dictionary context containing the retrieved room. This data will be passed to the template for rendering.
-    context = {"room" : room, "room_messages" : room_messages}
+    context = {"room" : room, "room_messages" : room_messages, "participants" : participants}
     # Uses the render function to render the "base/room.html" template with the provided context.
     return render(request, "base/room.html", context)
 

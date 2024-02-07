@@ -21,7 +21,7 @@ class Room(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null = True) # A topic can have multiple rooms, but a room can only have one topic. 
     name = models.CharField(max_length = 200) # Name of the room. 
     description = models.TextField(null = True, blank = True) # Description of room. Makes sure the values can be left blank. 
-    #participants =  # Stores all the users active in a room
+    participants = models.ManyToManyField(User, related_name='participants', blank = True)  # Stores all the users active in a room. Creates a many to many relationship.
     updated = models.DateTimeField(auto_now = True) # Takes a snapshot of anytime the table (model instance) is updated. Takes a timestamp every time room is updated.
     created = models.DateTimeField(auto_now_add = True) # Takes a timestamp of when the instance was created.
     
