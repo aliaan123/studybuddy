@@ -204,3 +204,21 @@ def deleteRoom(request, pk):
         room.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':room})
+
+
+
+@login_required(login_url='login') # Requires to be logged in, in order to delete a message. Redirects user to login page if they are not logged in.
+def deleteMessage(request, pk):
+    # Retrieves a specific message based on the provided pk.
+    message = Message.objects.get(id=pk)
+    
+     # Only allows the owner of the message to delete the message. 
+    if request.user != message.user :
+        return HttpResponse('You are not allowed here!')
+    
+    # Checks if the request method is POST.
+    if request.method == 'POST':
+        # Removes message from database, deletes it 
+        message.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj':message})

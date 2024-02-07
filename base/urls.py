@@ -16,5 +16,7 @@ urlpatterns = [
     path('update-room/<str:pk>/', views.updateRoom, name = "update-room"), 
     path('delete-room/<str:pk>/', views.deleteRoom, name = "delete-room"),# the url patterns, associate URLS like delete-room/3/ with corresponding functions, in this case the delete function. Calls it and with the pk of the room. 
 
+    path('delete-message/<str:pk>/', views.deleteMessage, name = "delete-message"),
+
     
 ]
