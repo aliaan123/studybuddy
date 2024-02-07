@@ -103,9 +103,13 @@ def home(request):
     topics = Topic.objects.all()
     # Counts the number of rooms
     room_count = rooms.count()
+    # Getting all of the room messages 
+    room_messages = Message.objects.all()
+    
     
     # Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
-    context = {"rooms" : rooms, 'topics': topics, 'room_count' : room_count}
+    context = {"rooms" : rooms, 'topics': topics, 
+               'room_count' : room_count, 'room_messages': room_messages}
     # Uses the render function to render the "base/home.html" template with the provided context.
     return render(request, "base/home.html", context)
 
@@ -118,7 +122,7 @@ def room(request, pk):
     # Queries child object of a specific room. If we take the parent model, in this case we have a room. 
     # To get all the children, all we have to do is specify the model name, in this case it is message. We put that in lowercase value (message).
     # So the model name in lowercase followed by "_set.all()". Which is basically saying, give us the set of messages that are related to this specific room.
-    room_messages = room.message_set.all().order_by('-created')
+    room_messages = room.message_set.all()
 
     # brings the participants in. all() method is used for the many to many relationship field to get all the participants. These are passed into the context dictionary.
     participants = room.participants.all()
