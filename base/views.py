@@ -144,6 +144,18 @@ def room(request, pk):
     return render(request, "base/room.html", context)
 
 
+
+# 
+def userProfile(request, pk):
+    user = User.objects.get(id=pk)
+    # Gets all the children of the specific object, in this case all the rooms of the user. 
+    rooms = user.room_set.all()
+    room_messages = user.message_set.all()
+    topics = Topic.objects.all()
+    context = {'user' : user, 'rooms' : rooms, 'room_messages' : room_messages, 'topics' : topics}
+    return render(request, 'base/profile.html', context)
+
+
 # Handles the creation of a new room. It initializes a RoomForm, processes the form data on a POST request, 
 # saves the room to the database if valid, and redirects to the home page.
 @login_required(login_url='login') # Requires to be logged in, in order to create a room. Redirects user to login page if they are not logged in.
