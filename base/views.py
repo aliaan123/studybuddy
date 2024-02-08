@@ -168,7 +168,9 @@ def createRoom(request):
         form = RoomForm(request.POST)
         # If the form is valid, save the data to the database and redirect to the home page
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False) # Gives a instance of this room
+            room.host = request.user # A host will be added based on whoever is logged in
+            room.save()
             return redirect('home')
     # Creates a dictionary context containing the form. This data will be passed to the template for rendering.
     context = {'form':form}
