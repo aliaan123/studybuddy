@@ -103,8 +103,8 @@ def home(request):
     topics = Topic.objects.all()
     # Counts the number of rooms
     room_count = rooms.count()
-    # Getting all of the room messages 
-    room_messages = Message.objects.all()
+    # filters and only gets the messages for the room based on what topic it is   
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
     
     
     # Creates a dictionary context containing the queried rooms and all topics. This data will be passed to the template for rendering.
