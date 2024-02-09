@@ -161,19 +161,26 @@ def userProfile(request, pk):
 @login_required(login_url='login') # Requires to be logged in, in order to create a room. Redirects user to login page if they are not logged in.
 def createRoom(request):
     # Initializes a new instance of the RoomForm class.
-    form = RoomForm()
+    form = RoomForm()   
+    
+    topics = Topic.objects.all()
+    
     # Checks if the request method is POST.
     if request.method == 'POST':
-        # If the request method is POST, populate the form with the provided POST data
-        form = RoomForm(request.POST)
-        # If the form is valid, save the data to the database and redirect to the home page
-        if form.is_valid():
-            room = form.save(commit=False) # Gives a instance of this room
-            room.host = request.user # A host will be added based on whoever is logged in
-            room.save()
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        # used for if user picks topic from the existing ones (the ones in the database), then get that topic value.
+        # or if user creates a new topic outside of the existing ones, then we create that new topic. 
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        # Creates a room object and sets the values. 
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get("name"),
+            description=request.POST.get("description"),
+        )
+        return redirect('home')
     # Creates a dictionary context containing the form. This data will be passed to the template for rendering.
-    context = {'form':form}
+    context = {'form':form, 'topics' : topics}
     # Uses the render function to render the "base/room_form.html" template with the provided context.
     return render(request, 'base/room_form.html', context)
 
@@ -186,6 +193,8 @@ def updateRoom(request, pk):
     # Initializes a form instance with the existing room data (instance=room). 
     form = RoomForm(instance=room) # the form will be prefilled with the room value.
     
+    topics = Topic.objects.all()
+    
     # Only allows the owner of the room to update the room. 
     if request.user != room.host :
         return HttpResponse('You are not allowed here!')
@@ -193,14 +202,25 @@ def updateRoom(request, pk):
     
     # Check if it is a POST method
     if request.method == 'POST':
+        
+        topic_name = request.POST.get('topic')
+        # used for if user picks topic from the existing ones (the ones in the database), then get that topic value.
+        # or if user creates a new topic outside of the existing ones, then we create that new topic. 
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+
         # Populates the form with the provided POST data, replacing the values in the form with the new values.
-        form = RoomForm(request.POST, instance=room)
+        #form = RoomForm(request.POST, instance=room)
         # If the form is valid, save the data to the database and redirect to the home page
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+        #if form.is_valid():
+            #form.save()
+        return redirect('home')
     # Creates a dictionary context containing the form. This data will be passed to the template for rendering.
-    context = {'form' : form}
+    context = {'form' : form, 'topics' : topics, 'room' : room}
     # Uses the render function to render the "base/room_form.html" template with the provided context.
     return render(request, 'base/room_form.html', context)
     

@@ -1,0 +1,20 @@
+<!--Extends the "main.html" template and displays a form
+for creating a new room. The form includes a CSRF token for security.-->
+
+
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div>
+    <form method = "POST" action = "">
+        {% csrf_token %}
+        {{form.as_p}}
+        <!-- This is template that submits a post request. -->
+        <input type = "submit" value = "Submit" />
+
+    </form>
+
+</div>
+
+{% endblock content%}
